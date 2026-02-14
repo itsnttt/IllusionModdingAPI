@@ -348,7 +348,7 @@ namespace KKAPI.Studio.UI.Toolbars
                         addedPos++;
                     } while (takenPositions.Contains(newPos));
 
-                    btn.SetActualPosition(newPos, false); // Do not save position
+                    btn.SetActualPosition(newPos, true); // Do not save position
                     takenPositions.Add(newPos);
                 }
                 _dirty = false;
