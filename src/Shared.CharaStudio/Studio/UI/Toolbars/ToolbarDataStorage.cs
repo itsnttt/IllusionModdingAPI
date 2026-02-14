@@ -138,6 +138,7 @@ namespace KKAPI.Studio.UI.Toolbars
                 return;
 
             var duplicateIds = new HashSet<string>();
+            var processedKeys = new HashSet<string>();
             var entries = new List<string>(buttons.Count);
 
             foreach (var b in buttons)
@@ -145,19 +146,20 @@ namespace KKAPI.Studio.UI.Toolbars
                 if (!b.DesiredPosition.HasValue) continue;
 
                 var saveKey = GetUniqueName(b);
-                if (entries.Contains(saveKey))
+                if (processedKeys.Contains(saveKey))
                 {
                     duplicateIds.Add(saveKey);
                     continue;
                 }
 
+                processedKeys.Add(saveKey);
                 entries.Add($"{saveKey}:{b.DesiredPosition.Value.Row}:{b.DesiredPosition.Value.Column}");
             }
 
             if (duplicateIds.Count > 0)
             {
                 KoikatuAPI.Logger.LogWarning($"Duplicate toolbar button IDs detected when saving: {string.Join(", ", duplicateIds.ToArray())}. These settings will not be saved until the IDs are changed to be unique.");
-                _positionSetting.Value = string.Join("|", entries.Except(duplicateIds).OrderBy(x => x).ToArray());
+                _positionSetting.Value = string.Join("|", entries.Where(e => !duplicateIds.Any(d => e.StartsWith(d + ":"))).OrderBy(x => x).ToArray());
             }
             else
             {
